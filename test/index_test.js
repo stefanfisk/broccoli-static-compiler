@@ -42,23 +42,50 @@ test('when no files option is specified', function(t) {
 
 test('with files glob specified', function(t) {
   t.test('with a root destination directory', function(t) {
-    var tree = pickFiles(fixturePath, {
-      files: ['**/blah.txt'],
-      srcDir: '/',
-      destDir: '/'
+    t.test('with a filename specified', function(t) {
+      var tree = pickFiles(fixturePath, {
+        files: ['**/blah.txt'],
+        srcDir: '/',
+        destDir: '/'
+      })
+
+      var builder = new Builder(tree)
+      builder.build()
+      .then(function(result) {
+        t.ok(fs.existsSync(path.join(result.directory, 'dir1', 'blah.txt')))
+        t.ok(fs.existsSync(path.join(result.directory, 'dir2', 'blah.txt')))
+
+        t.notOk(fs.existsSync(path.join(result.directory, 'dir1', 'tmp.txt')))
+        t.notOk(fs.existsSync(path.join(result.directory, 'dir2', 'tmp.txt')))
+
+        t.end()
+      })
     })
 
-    var builder = new Builder(tree)
-    builder.build()
-    .then(function(result) {
-      t.ok(fs.existsSync(path.join(result.directory, 'dir1', 'blah.txt')))
-      t.ok(fs.existsSync(path.join(result.directory, 'dir2', 'blah.txt')))
+    t.test('with a filename negated', function(t) {
+      var tree = pickFiles(fixturePath, {
+        files: [
+          '**/*.*',
+          '!**/tmp.txt'
+        ],
+        srcDir: '/',
+        destDir: '/'
+      })
 
-      t.notOk(fs.existsSync(path.join(result.directory, 'dir1', 'tmp.txt')))
-      t.notOk(fs.existsSync(path.join(result.directory, 'dir2', 'tmp.txt')))
+      var builder = new Builder(tree)
+      builder.build()
+      .then(function(result) {
+        t.ok(fs.existsSync(path.join(result.directory, 'dir1', 'blah.txt')))
+        t.ok(fs.existsSync(path.join(result.directory, 'dir2', 'blah.txt')))
 
-      t.end()
+        t.notOk(fs.existsSync(path.join(result.directory, 'dir1', 'tmp.txt')))
+        t.notOk(fs.existsSync(path.join(result.directory, 'dir2', 'tmp.txt')))
+
+        t.end()
+      })
     })
+
+    t.end()
   })
 
   t.end()

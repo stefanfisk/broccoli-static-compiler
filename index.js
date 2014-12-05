@@ -1,7 +1,6 @@
 var fs = require('fs')
 var path = require('path')
-var mkdirp = require('mkdirp')
-var helpers = require('broccoli-kitchen-sink-helpers')
+var grunt = require('grunt')
 var symlinkOrCopySync = require('symlink-or-copy').sync
 var Writer = require('broccoli-writer')
 
@@ -25,11 +24,7 @@ StaticCompiler.prototype.write = function (readTree, destDir) {
       self._copy(sourcePath, destPath)
     } else {
       var baseDir = path.join(srcDir, self.options.srcDir)
-      var files = helpers.multiGlob(self.options.files, {
-        cwd: baseDir,
-        root: baseDir,
-        nomount: false
-      })
+      var files = grunt.file.expand({cwd: baseDir}, self.options.files)
       for (var i = 0; i < files.length; i++) {
         var fileSourcePath = path.join(sourcePath, files[i])
         var fileDestPath = path.join(destPath, files[i])
@@ -47,7 +42,7 @@ StaticCompiler.prototype._copy = function (sourcePath, destPath) {
 
   var destDir = path.dirname(destPath)
   if (!fs.existsSync(destDir)) {
-    mkdirp.sync(destDir)
+    grunt.file.mkdir(destDir)
   }
 
   // if destDir was / then remove the temp folder
