@@ -11,12 +11,16 @@ function StaticCompiler (inputTree, options) {
   if (!(this instanceof StaticCompiler)) return new StaticCompiler(inputTree, options)
   this.inputTree = inputTree
 
-  this.options = options || {}
-
-  if (Array.isArray(this.options)) {
+  if (Array.isArray(options)) {
     this.options = {
-      files: this.options
+      files: options
     }
+  } else if (typeof options === 'string' || options instanceof String) {
+    this.options = {
+      files: [options]
+    }
+  } else {
+    this.options = options || {};
   }
 
   this.options.srcDir = this.options.srcDir || '/';
@@ -37,7 +41,7 @@ StaticCompiler.prototype.write = function (readTree, destDir) {
       var files = grunt.file.expand({cwd: baseDir}, self.options.files)
       for (var i = 0; i < files.length; i++) {
         var fileSourcePath = path.join(sourcePath, files[i])
-        var fileDestPath = path.join(destPath, files[i])
+        var fileDestPath = self.options.flatten ? path.join(destPath, path.basename(files[i])) : path.join(destPath, files[i])
 
         self._copy(fileSourcePath, fileDestPath)
       }
