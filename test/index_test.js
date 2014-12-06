@@ -16,8 +16,25 @@ test('when no options are specified', function(t) {
 
     t.end()
   })
+})
 
- t.end()
+test('with files option is passed directly', function(t) {
+  var tree = pickFiles(fixturePath, [
+    '**/*.*',
+    '!**/tmp.txt'
+  ])
+
+  var builder = new Builder(tree)
+  builder.build()
+  .then(function(result) {
+    t.ok(fs.existsSync(path.join(result.directory, 'dir1', 'blah.txt')))
+    t.ok(fs.existsSync(path.join(result.directory, 'dir2', 'blah.txt')))
+
+    t.notOk(fs.existsSync(path.join(result.directory, 'dir1', 'tmp.txt')))
+    t.notOk(fs.existsSync(path.join(result.directory, 'dir2', 'tmp.txt')))
+
+    t.end()
+  })
 })
 
 test('when no files option is specified', function(t) {
