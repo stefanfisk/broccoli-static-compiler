@@ -11,6 +11,9 @@ function StaticCompiler (inputTree, options) {
   if (!(this instanceof StaticCompiler)) return new StaticCompiler(inputTree, options)
   this.inputTree = inputTree
   this.options = options || {}
+
+  this.options.srcDir = this.options.srcDir || '/';
+  this.options.destDir = this.options.destDir || '/';
 }
 
 StaticCompiler.prototype.write = function (readTree, destDir) {

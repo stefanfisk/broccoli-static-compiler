@@ -6,6 +6,20 @@ var pickFiles = require('..')
 
 var fixturePath = path.join(__dirname, 'fixtures')
 
+test('when no options are specified', function(t) {
+  var tree = pickFiles(fixturePath)
+
+  var builder = new Builder(tree)
+  builder.build()
+  .then(function(result) {
+    t.ok(fs.existsSync(path.join(result.directory, 'dir1', 'blah.txt')))
+
+    t.end()
+  })
+
+ t.end()
+})
+
 test('when no files option is specified', function(t) {
   t.test('with a nested destination directory', function(t) {
     var tree = pickFiles(fixturePath, {
